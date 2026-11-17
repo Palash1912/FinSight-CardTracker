@@ -425,5 +425,36 @@ export interface GmailSyncResponse {
   errors: string[];
 }
 
+/** Phase 8: AI Financial Assistant types */
+
+export interface ChatMessage {
+  id: string;
+  role: "user" | "assistant" | "system" | "tool";
+  content: string;
+  tool_calls?: Array<{ tool: string; args?: Record<string, unknown>; result?: unknown }> | null;
+  tool_call_id?: string | null;
+  created_at: string;
+}
+
+export interface AIConversation {
+  id: string;
+  title: string;
+  created_at: string;
+  updated_at?: string | null;
+  messages: ChatMessage[];
+}
+
+export interface ChatRequest {
+  conversation_id?: string | null;
+  message: string;
+}
+
+export interface ChatResponse {
+  conversation_id: string;
+  message: ChatMessage;
+  tool_calls_executed: Array<{ tool: string; args?: Record<string, unknown>; result?: unknown }>;
+}
+
+
 
 

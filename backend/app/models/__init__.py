@@ -1,5 +1,6 @@
 """SQLAlchemy models — import all models here so Alembic picks them up."""
 
+from app.models.assistant import AIConversation, AIMessage
 from app.models.base import Base
 from app.models.card import CreditCard
 from app.models.email import EmailConnection, EmailImport
@@ -10,6 +11,8 @@ from app.models.transaction import Transaction
 from app.models.user import User
 
 __all__ = [
+    "AIConversation",
+    "AIMessage",
     "Base",
     "CreditCard",
     "EmailConnection",

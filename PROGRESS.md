@@ -1,8 +1,8 @@
 # FinSight AI — Project Implementation Progress & Roadmap
 
 > **Last Updated**: November 17, 2026  
-> **Overall Status**: Phases 1 through 7 Completed ✅ | Phase 8 (AI Assistant) Queued ⏳  
-> **Progress**: **~85% Complete**
+> **Overall Status**: Phases 1 through 8 Completed ✅ | Phase 9 (Policy RAG) Queued ⏳  
+> **Progress**: **~90% Complete**
 
 ---
 
@@ -18,7 +18,7 @@
 | **Phase 5** | Rewards Engine & Pre-Purchase Recommendation (Core Differentiator) | **Completed** ✅ | 100% |
 | **Phase 6** | Post-Purchase Reward Reconciliation & Dashboard | **Completed** ✅ | 100% |
 | **Phase 7** | Gmail OAuth Statement Discovery & Ingestion | **Completed** ✅ | 100% |
-| **Phase 8** | LangGraph AI Financial Assistant with Safe Deterministic Tools | **Pending** ⏳ | 0% |
+| **Phase 8** | LangGraph AI Financial Assistant with Safe Deterministic Tools | **Completed** ✅ | 100% |
 | **Phase 9** | Document Knowledge & Policy RAG | **Pending** ⏳ | 0% |
 | **Phase 10** | Security Hardening, Backup/Restore, CI & Release Readiness | **Pending** ⏳ | 0% |
 
@@ -221,17 +221,33 @@
 
 ---
 
-### Phase 8: AI Financial Assistant (Core Module 8) ⏳
-- [ ] Database migration: `ai_conversations`, `ai_messages`
-- [ ] LLM provider abstraction (OpenAI / local LLMs / offline disable toggle)
-- [ ] LangGraph orchestration graph
-- [ ] Deterministic read-only tool suite:
-  - [ ] `get_card_details`, `get_statement_summary`, `get_transactions`
-  - [ ] `get_spending_analytics`, `get_due_dates`, `evaluate_purchase_rewards`
-  - [ ] `get_remaining_reward_cap`, `compare_cards`, `detect_missing_rewards`
-- [ ] Input/output validation and strict ownership enforcement
-- [ ] Frontend conversational assistant chat interface (drawer or dedicated page)
-- [ ] Assistant unit and safety tests
+### Phase 8: AI Financial Assistant (Core Module 8) ✅ (100%)
+- [x] Database migration: `ai_conversations` and `ai_messages` tables in `0006_ai_assistant.py`
+- [x] SQLAlchemy models: `AIConversation` and `AIMessage` in `app/models/assistant.py`
+- [x] Pydantic v2 schemas: `ChatMessageRead`, `AIConversationRead`, `ChatRequest`, `ChatResponse` in `app/schemas/assistant.py`
+- [x] Zero LLM arithmetic architecture & system prompt enforcing strict deterministic tool data
+- [x] Deterministic read-only tool suite in `app/services/assistant_tools.py`:
+  - [x] `get_card_summary`: Card limits, balances, utilization %, statement/due dates
+  - [x] `get_upcoming_dues`: Outstanding bills, minimum amounts due, overdue detection
+  - [x] `get_spending_analytics`: Current month spend, MoM delta, category breakdown, top merchants
+  - [x] `evaluate_purchase_rewards`: Pre-purchase best card evaluation, net INR benefit, rate %
+  - [x] `get_cap_status`: Active monthly/quarterly spend cap utilization
+  - [x] `detect_missing_rewards`: Reward reconciliation audit for unrewarded spend & cap losses
+  - [x] `search_transactions`: Transaction keyword search
+- [x] Assistant orchestration engine (`app/services/assistant_service.py`):
+  - [x] OpenAI-compatible structured tool calling loop with execution logging
+  - [x] Offline / local rule-based intent matching fallback when AI is disabled or offline
+- [x] REST APIs under `/api/v1/assistant`:
+  - [x] `POST /api/v1/assistant/chat` (send message & receive tool-backed reply)
+  - [x] `GET /api/v1/assistant/conversations` (list user advisory sessions)
+  - [x] `GET /api/v1/assistant/conversations/{id}` (session message history)
+  - [x] `DELETE /api/v1/assistant/conversations/{id}` (delete session)
+- [x] Unit test suite for assistant tool definitions, system prompt, and schemas (`tests/unit/test_assistant.py`)
+- [x] Frontend UI:
+  - [x] Conversational chat page (`src/app/assistant/page.tsx`) with session history sidebar and "+ New Session" action
+  - [x] Quick financial prompt cards (Amazon spend evaluation, upcoming dues, spend breakdown, cap limits, reward leak audit)
+  - [x] Executed tool call badges in assistant messages
+  - [x] React Query hooks (`useConversations`, `useConversation`, `useSendMessage`, `useDeleteConversation`) in `src/hooks/use-assistant.ts`
 
 ---
 
