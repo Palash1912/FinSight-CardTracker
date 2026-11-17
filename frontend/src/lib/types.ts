@@ -60,15 +60,67 @@ export interface DashboardMetric {
   icon: string;
 }
 
-/** Transaction representation (Phase 3). */
+/** Transaction representation. */
 export interface Transaction {
   id: string;
+  user_id: string;
   card_id: string;
-  date: string;
-  description: string;
-  amount: Money;
+  statement_id: string | null;
+  transaction_date: string;
+  posting_date: string | null;
+  original_description: string;
+  cleaned_description: string;
+  merchant_name: string | null;
   category: string;
-  type: "debit" | "credit";
+  amount: Money;
+  currency: string;
+  txn_type: "debit" | "credit";
+  fingerprint: string;
+  source: string;
+  status: "pending" | "posted" | "reconciled";
+  source_page?: number | null;
+  source_row?: number | null;
+  created_at: string;
+  updated_at: string | null;
+}
+
+export type StatementStatus = "pending_review" | "imported" | "rejected" | "failed";
+
+/** Statement representation. */
+export interface Statement {
+  id: string;
+  user_id: string;
+  card_id: string;
+  statement_date: string;
+  due_date: string;
+  period_start: string | null;
+  period_end: string | null;
+  total_amount_due: Money;
+  minimum_amount_due: Money;
+  opening_balance: Money;
+  closing_balance: Money;
+  total_credits: Money;
+  total_debits: Money;
+  file_name: string;
+  file_size_bytes: number;
+  parser_used: string;
+  status: StatementStatus;
+  error_message: string | null;
+  created_at: string;
+  updated_at: string | null;
+}
+
+/** Detailed statement for the review & reconciliation screen. */
+export interface StatementReviewDetail extends Statement {
+  transactions: Transaction[];
+  reconciliation_matched: boolean;
+  net_calculated: Money;
+}
+
+/** Request body to confirm statement import. */
+export interface StatementConfirmRequest {
+  excluded_transaction_ids?: string[];
+  update_card_balance?: boolean;
 }
 
 /** Generic paginated response. */

@@ -1,8 +1,8 @@
 # FinSight AI — Project Implementation Progress & Roadmap
 
 > **Last Updated**: November 17, 2026  
-> **Overall Status**: Phase 1 & 2 Completed ✅ | Phase 3 (Statement Ingestion) Queued ⏳  
-> **Progress**: **~30% Complete**
+> **Overall Status**: Phases 1, 2, and 3 Completed ✅ | Phase 4 (Payments & Bill Tracking) Queued ⏳  
+> **Progress**: **~45% Complete**
 
 ---
 
@@ -13,7 +13,7 @@
 | **Phase 0** | Inspection, Architecture & Schema Planning | **Completed** ✅ | 100% |
 | **Phase 1** | Project Scaffold, Docker Stack, Migrations & Base Shell | **Completed** ✅ | 100% |
 | **Phase 2** | Credit Card Management & CRUD APIs | **Completed** ✅ | 100% |
-| **Phase 3** | Statement Ingestion (PDF Parsers & Dedup Pipeline) | **Pending** ⏳ | 0% |
+| **Phase 3** | Statement Ingestion (PDF Parsers & Dedup Pipeline) | **Completed** ✅ | 100% |
 | **Phase 4** | Payments, Bill Tracking & Core Analytics | **Pending** ⏳ | 0% |
 | **Phase 5** | Rewards Engine & Pre-Purchase Recommendation (Core Differentiator) | **Pending** ⏳ | 0% |
 | **Phase 6** | Post-Purchase Reward Reconciliation & Dashboard | **Pending** ⏳ | 0% |
@@ -83,19 +83,38 @@
 
 ---
 
-### Phase 3: Statement Ingestion & Transaction Pipeline (Core Modules 2 & 3) ⏳
-- [ ] Database migration: `statements`, `transactions`, `categories`, `merchants`, `ingestion_jobs`
-- [ ] Local storage abstraction (`storage/base.py`, `storage/local.py`)
-- [ ] PDF upload endpoint with file type, size validation & SHA-256 duplicate detection
-- [ ] Statement parser adapter interface (`parsers/base.py`)
-  - [ ] ICICI Bank parser adapter
-  - [ ] HDFC Bank parser adapter
-  - [ ] HSBC Bank parser adapter
-  - [ ] Generic fallback tabular parser
-- [ ] Transaction normalizer & SHA-256 fingerprinting for row-level deduplication
-- [ ] Review & reconciliation screen before final import
-- [ ] Reprocessing and safe rollback mechanisms
-- [ ] Synthetic statement test fixtures and parser unit tests
+### Phase 3: Statement Ingestion & Transaction Pipeline (Core Modules 2 & 3) ✅ (100%)
+- [x] Database migration: `statements` and `transactions` tables in `0002_statements_and_transactions.py`
+- [x] Local storage provider with path traversal safeguards (`app/storage/base.py`, `app/storage/local.py`)
+- [x] PDF text extraction and parser adapter architecture:
+  - [x] ICICI Bank statement parser (`app/parsers/icici.py`)
+  - [x] HDFC Bank statement parser (`app/parsers/hdfc.py`)
+  - [x] HSBC Bank statement parser (`app/parsers/hsbc.py`)
+  - [x] Generic fallback statement parser (`app/parsers/generic.py`)
+  - [x] Parser detector & registry (`app/parsers/detector.py`)
+- [x] Transaction normalizer, merchant extractor, categorizer, and SHA-256 fingerprint deduplication (`app/parsers/normalizer.py`)
+- [x] Statement ingestion service (`app/services/statement_service.py`):
+  - [x] Size and type validation
+  - [x] SHA-256 file-level duplicate detection
+  - [x] Automatic target card association
+  - [x] Staged import in `pending_review` state
+  - [x] Total reconciliation comparing calculated net against total amount due
+  - [x] Safe confirmation & rollback/delete cascades
+- [x] Transaction management service (`app/services/transaction_service.py`)
+- [x] REST APIs:
+  - [x] `POST /api/v1/statements/upload` (multipart PDF upload & processing)
+  - [x] `GET /api/v1/statements`, `GET /api/v1/statements/{id}`
+  - [x] `POST /api/v1/statements/{id}/confirm`
+  - [x] `DELETE /api/v1/statements/{id}` (safe rollback)
+  - [x] `GET /api/v1/transactions` (filtered & paginated)
+  - [x] `PATCH /api/v1/transactions/{id}`, `DELETE /api/v1/transactions/{id}`
+- [x] Unit test suite for parsers and normalizer (`tests/unit/test_parsers.py`)
+- [x] Frontend statement & transaction UI:
+  - [x] Statements overview dashboard (`src/app/statements/page.tsx`)
+  - [x] Drag & drop PDF upload modal (`src/components/statements/upload-dialog.tsx`)
+  - [x] Review & reconciliation screen with transaction exclusion toggle and match indicator (`src/app/statements/[id]/review/page.tsx`)
+  - [x] Full transaction management page with search, filters, inline category editing (`src/app/transactions/page.tsx`)
+  - [x] Live dashboard recent transactions integration (`src/components/dashboard/recent-transactions.tsx`)
 
 ---
 

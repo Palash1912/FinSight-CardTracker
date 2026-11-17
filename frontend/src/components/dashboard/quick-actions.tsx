@@ -24,7 +24,7 @@ const actions: QuickAction[] = [
     description: "Upload a bank statement PDF to automatically import transactions.",
     icon: FileUp,
     iconColor: "text-emerald-600 bg-emerald-100",
-    href: "/statements/upload",
+    href: "/statements",
   },
   {
     title: "Check Rewards",

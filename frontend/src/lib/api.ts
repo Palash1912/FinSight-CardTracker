@@ -35,12 +35,20 @@ function messageFromBody(body: unknown, fallback: string): string {
  * Paths include the API prefix, e.g. "/api/v1/cards".
  */
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
+  const headers: Record<string, string> = {};
+
+  if (!isFormData) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  if (options.headers) {
+    Object.assign(headers, options.headers);
+  }
+
   const response = await fetch(`${BASE_URL}${path}`, {
     ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers as Record<string, string> | undefined),
-    },
+    headers,
   });
 
   if (!response.ok) {
@@ -70,9 +78,10 @@ export const api = {
   },
 
   post<T>(path: string, body?: unknown): Promise<T> {
+    const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
     return apiFetch<T>(path, {
       method: "POST",
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: isFormData ? (body as BodyInit) : (body === undefined ? undefined : JSON.stringify(body)),
     });
   },
 
