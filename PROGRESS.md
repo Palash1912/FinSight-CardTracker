@@ -1,8 +1,8 @@
 # FinSight AI — Project Implementation Progress & Roadmap
 
 > **Last Updated**: November 17, 2026  
-> **Overall Status**: Phases 1 through 8 Completed ✅ | Phase 9 (Policy RAG) Queued ⏳  
-> **Progress**: **~90% Complete**
+> **Overall Status**: Phases 1 through 9 Completed ✅ | Phase 10 (Security & Release) Queued ⏳  
+> **Progress**: **~95% Complete**
 
 ---
 
@@ -19,7 +19,7 @@
 | **Phase 6** | Post-Purchase Reward Reconciliation & Dashboard | **Completed** ✅ | 100% |
 | **Phase 7** | Gmail OAuth Statement Discovery & Ingestion | **Completed** ✅ | 100% |
 | **Phase 8** | LangGraph AI Financial Assistant with Safe Deterministic Tools | **Completed** ✅ | 100% |
-| **Phase 9** | Document Knowledge & Policy RAG | **Pending** ⏳ | 0% |
+| **Phase 9** | Document Knowledge & Policy RAG | **Completed** ✅ | 100% |
 | **Phase 10** | Security Hardening, Backup/Restore, CI & Release Readiness | **Pending** ⏳ | 0% |
 
 ---
@@ -251,12 +251,33 @@
 
 ---
 
-### Phase 9: Document Knowledge & Policy RAG (Core Module 9) ⏳
-- [ ] Database migration: `documents`, `document_chunks` (pgvector)
-- [ ] Policy PDF ingestion, chunking, and embedding pipeline
-- [ ] RAG retriever for terms explanation with citation linking
-- [ ] Discrepancy detector (flags conflicts between uploaded PDF and configured rules)
-- [ ] Document management UI
+### Phase 9: Document Knowledge & Policy RAG (Core Module 9) ✅ (100%)
+- [x] Database migration: `documents` and `document_chunks` tables in `0007_documents_and_rag.py`
+- [x] SQLAlchemy models: `Document` and `DocumentChunk` in `app/models/document.py`
+- [x] Pydantic v2 schemas: `DocumentRead`, `DocumentChunkRead`, `PolicyCitation`, `PolicySearchRequest`, `PolicySearchResponse`, `DiscrepancyReportItem`, `DiscrepancyReportResponse` in `app/schemas/document.py`
+- [x] Document ingestion & semantic chunking service (`app/services/document_service.py`):
+  - [x] PDF text extraction and page attribution
+  - [x] Sliding word chunking algorithm with configurable overlap
+  - [x] Pre-seeded official bank policy fixtures for ICICI Amazon Pay, HDFC Millennia, and HSBC Cashback
+- [x] Policy RAG retriever & grounded citation engine (`app/services/policy_rag.py`):
+  - [x] Hybrid keyword & relevance scoring across document chunks
+  - [x] Page-level attribution citations with exact snippet quotes
+  - [x] Discrepancy detector cross-referencing active `RewardRule` exclusions/caps against official policy texts
+- [x] REST APIs under `/api/v1/documents`:
+  - [x] `POST /api/v1/documents/upload` (multipart PDF upload & chunk indexing)
+  - [x] `GET /api/v1/documents` (list user documents)
+  - [x] `DELETE /api/v1/documents/{id}` (delete document and chunks)
+  - [x] `POST /api/v1/documents/search` (grounded RAG query with page citations)
+  - [x] `GET /api/v1/documents/discrepancies` (audit discrepancies between rules and policies)
+  - [x] `POST /api/v1/documents/seed` (seed default bank policies)
+- [x] Unit test suite for chunking algorithm, relevance scoring, and schemas (`tests/unit/test_documents.py`)
+- [x] Frontend UI:
+  - [x] Policy Knowledge & Document RAG page (`src/app/documents/page.tsx`)
+  - [x] Interactive policy search bar with quick test queries and verified page citation cards
+  - [x] Policy Discrepancy & Devaluation Monitor card with actionable rule fix recommendations
+  - [x] Document Library view and PDF Upload modal dialog
+  - [x] Navigation item added in sidebar (`src/components/layout/sidebar.tsx`)
+  - [x] React Query hooks (`useDocuments`, `useUploadDocument`, `useSearchPolicies`, `useDiscrepancies`, `useSeedPolicies`) in `src/hooks/use-documents.ts`
 
 ---
 

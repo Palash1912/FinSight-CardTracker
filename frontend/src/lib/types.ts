@@ -455,6 +455,59 @@ export interface ChatResponse {
   tool_calls_executed: Array<{ tool: string; args?: Record<string, unknown>; result?: unknown }>;
 }
 
+/** Phase 9: Document Knowledge & Policy RAG types */
+
+export interface DocumentRead {
+  id: string;
+  card_id: string | null;
+  title: string;
+  doc_type: string;
+  file_name: string;
+  file_size_bytes: number;
+  total_pages: number;
+  status: string;
+  created_at: string;
+  chunks_count: number;
+}
+
+export interface PolicyCitation {
+  document_id: string;
+  document_title: string;
+  doc_type: string;
+  page_number: number;
+  snippet: string;
+  relevance_score: number;
+}
+
+export interface PolicySearchRequest {
+  query: string;
+  card_id?: string | null;
+  limit?: number;
+}
+
+export interface PolicySearchResponse {
+  query: string;
+  citations: PolicyCitation[];
+  synthesized_explanation: string;
+}
+
+export interface DiscrepancyReportItem {
+  card_name: string;
+  rule_name: string;
+  configured_rate: string;
+  policy_document: string;
+  policy_page: number;
+  discrepancy_type: string;
+  description: string;
+  recommended_action: string;
+}
+
+export interface DiscrepancyReportResponse {
+  total_discrepancies: number;
+  items: DiscrepancyReportItem[];
+}
+
+
 
 
 

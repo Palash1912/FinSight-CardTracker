@@ -3,6 +3,7 @@
 from app.models.assistant import AIConversation, AIMessage
 from app.models.base import Base
 from app.models.card import CreditCard
+from app.models.document import Document, DocumentChunk
 from app.models.email import EmailConnection, EmailImport
 from app.models.payment import Payment
 from app.models.reward import RewardCap, RewardLedger, RewardProgram, RewardRule
@@ -15,6 +16,8 @@ __all__ = [
     "AIMessage",
     "Base",
     "CreditCard",
+    "Document",
+    "DocumentChunk",
     "EmailConnection",
     "EmailImport",
     "Payment",

@@ -7,6 +7,7 @@ from fastapi import APIRouter
 from app.api.analytics import router as analytics_router
 from app.api.assistant import router as assistant_router
 from app.api.cards import router as cards_router
+from app.api.documents import router as documents_router
 from app.api.email import router as email_router
 from app.api.health import router as health_router
 from app.api.payments import router as payments_router
@@ -25,3 +26,4 @@ api_router.include_router(analytics_router, tags=["analytics"])
 api_router.include_router(rewards_router, tags=["rewards"])
 api_router.include_router(email_router, tags=["email"])
 api_router.include_router(assistant_router, tags=["assistant"])
+api_router.include_router(documents_router, tags=["documents"])

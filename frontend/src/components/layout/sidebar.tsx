@@ -15,6 +15,7 @@ import {
   Gift,
   BarChart3,
   Bot,
+  BookOpen,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -39,6 +40,7 @@ const navItems: NavItem[] = [
   { label: "Rewards", icon: Gift, href: "/rewards" },
   { label: "Analytics", icon: BarChart3, href: "/analytics" },
   { label: "AI Assistant", icon: Bot, href: "/assistant", badge: "AI" },
+  { label: "Policies & RAG", icon: BookOpen, href: "/documents" },
 ];
 
 const bottomNavItems: NavItem[] = [
