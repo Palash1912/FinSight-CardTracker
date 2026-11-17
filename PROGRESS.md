@@ -1,8 +1,8 @@
 # FinSight AI — Project Implementation Progress & Roadmap
 
 > **Last Updated**: November 17, 2026  
-> **Overall Status**: Phases 1, 2, and 3 Completed ✅ | Phase 4 (Payments & Bill Tracking) Queued ⏳  
-> **Progress**: **~45% Complete**
+> **Overall Status**: Phases 1, 2, 3, and 4 Completed ✅ | Phase 5 (Rewards Engine) Queued ⏳  
+> **Progress**: **~60% Complete**
 
 ---
 
@@ -14,7 +14,7 @@
 | **Phase 1** | Project Scaffold, Docker Stack, Migrations & Base Shell | **Completed** ✅ | 100% |
 | **Phase 2** | Credit Card Management & CRUD APIs | **Completed** ✅ | 100% |
 | **Phase 3** | Statement Ingestion (PDF Parsers & Dedup Pipeline) | **Completed** ✅ | 100% |
-| **Phase 4** | Payments, Bill Tracking & Core Analytics | **Pending** ⏳ | 0% |
+| **Phase 4** | Payments, Bill Tracking & Core Analytics | **Completed** ✅ | 100% |
 | **Phase 5** | Rewards Engine & Pre-Purchase Recommendation (Core Differentiator) | **Pending** ⏳ | 0% |
 | **Phase 6** | Post-Purchase Reward Reconciliation & Dashboard | **Pending** ⏳ | 0% |
 | **Phase 7** | Gmail OAuth Statement Discovery & Ingestion | **Pending** ⏳ | 0% |
@@ -118,20 +118,29 @@
 
 ---
 
-### Phase 4: Payments & Bill Tracking, Core Analytics (Core Modules 4 & 6) ⏳
-- [ ] Database migration: `payments` table
-- [ ] Payment service: link payments to statements, track partial/full settlements
-- [ ] Due date reminder logic and overdue warning indicators
-- [ ] Analytics service (pure SQL/deterministic queries):
-  - [ ] Monthly spend aggregation
-  - [ ] Category spend breakdown
-  - [ ] Merchant spend breakdown
-  - [ ] Card-wise spend comparison
-- [ ] Frontend dashboard integration:
-  - [ ] Connect Overview Cards to live database metrics
-  - [ ] Interactive spend charts using Recharts
-  - [ ] Date range, card, category, and merchant filtering
-- [ ] Payment and analytics unit/API tests
+### Phase 4: Payments & Bill Tracking, Core Analytics (Core Modules 4 & 6) ✅ (100%)
+- [x] Database migration: `payments` table in `0003_payments.py`
+- [x] Payment tracking service (`app/services/payment_service.py`):
+  - [x] Record full or partial payments, automatic card balance reduction
+  - [x] Multi-payment statement settlement tracking
+  - [x] Consolidated card billing & due date calculator with overdue detection
+  - [x] Safe payment rollback / deletion
+- [x] Deterministic SQL analytics service (`app/services/analytics_service.py`):
+  - [x] Monthly spend aggregation time series
+  - [x] Category spend breakdown and percentage distributions
+  - [x] Top merchants ranking by spend
+  - [x] Card spend distribution
+  - [x] Live dashboard summary metrics (utilization, upcoming dues count & total, month-over-month spend delta)
+- [x] REST APIs:
+  - [x] `POST /api/v1/payments`, `GET /api/v1/payments`, `GET /api/v1/payments/bills`, `DELETE /api/v1/payments/{id}`
+  - [x] `GET /api/v1/analytics/summary`, `/monthly`, `/categories`, `/merchants`, `/cards`
+- [x] Unit test suite for payment and analytics schemas (`tests/unit/test_payments_and_analytics.py`)
+- [x] Frontend UI:
+  - [x] Payments & Bill Tracking page (`src/app/payments/page.tsx`) with overdue warning banner and billing status table
+  - [x] Record Payment modal dialog (`src/components/payments/record-payment-dialog.tsx`) with quick pay actions
+  - [x] Historical payment audit log with delete/rollback action
+  - [x] Interactive Recharts visualizations (`src/components/dashboard/spend-charts.tsx`): Monthly spend area chart and category donut chart
+  - [x] Live home dashboard summary card metrics integration (`src/components/dashboard/overview-cards.tsx`)
 
 ---
 

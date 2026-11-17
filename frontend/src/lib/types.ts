@@ -136,3 +136,104 @@ export interface PaginatedResponse<T> {
 export interface MessageResponse {
   message: string;
 }
+
+export type PaymentMethod =
+  | "upi"
+  | "neft"
+  | "imps"
+  | "net_banking"
+  | "debit_card"
+  | "auto_debit"
+  | "cheque"
+  | "cash"
+  | "other";
+
+export type BillStatus = "PAID" | "PARTIALLY_PAID" | "UNPAID" | "NO_BILL";
+
+/** Payment record representation. */
+export interface Payment {
+  id: string;
+  user_id: string;
+  card_id: string;
+  statement_id: string | null;
+  payment_date: string;
+  amount: Money;
+  currency: string;
+  payment_method: PaymentMethod;
+  reference_number: string | null;
+  notes: string | null;
+  status: "completed" | "pending" | "failed";
+  created_at: string;
+}
+
+/** Body for recording a payment. */
+export interface PaymentCreate {
+  card_id: string;
+  statement_id?: string | null;
+  payment_date: string;
+  amount: Money;
+  payment_method?: PaymentMethod;
+  reference_number?: string | null;
+  notes?: string | null;
+}
+
+/** Active bill status for each credit card. */
+export interface CardBillStatus {
+  card_id: string;
+  card_name: string;
+  issuer: string;
+  last_four_digits: string;
+  statement_id: string | null;
+  statement_date: string | null;
+  due_date: string;
+  statement_amount: Money;
+  minimum_due: Money;
+  total_paid: Money;
+  remaining_balance: Money;
+  days_until_due: number;
+  status: BillStatus;
+  is_overdue: boolean;
+}
+
+/** Monthly spend point. */
+export interface MonthlySpendPoint {
+  month: string;
+  total_spend: Money;
+  transaction_count: number;
+}
+
+/** Category spend breakdown point. */
+export interface CategorySpendPoint {
+  category: string;
+  total_spend: Money;
+  percentage: number;
+}
+
+/** Top merchant spend item. */
+export interface MerchantSpendPoint {
+  merchant: string;
+  total_spend: Money;
+  transaction_count: number;
+}
+
+/** Card spend distribution point. */
+export interface CardSpendPoint {
+  card_id: string;
+  card_name: string;
+  issuer: string;
+  total_spend: Money;
+}
+
+/** Comprehensive dashboard summary. */
+export interface DashboardSummary {
+  total_outstanding: Money;
+  total_credit_limit: Money;
+  total_available_credit: Money;
+  overall_utilization: number;
+  active_cards_count: number;
+  current_month_spend: Money;
+  previous_month_spend: Money;
+  spend_change_percentage: number | null;
+  upcoming_dues_count: number;
+  upcoming_dues_total: Money;
+}

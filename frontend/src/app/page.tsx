@@ -1,6 +1,7 @@
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { OverviewCards } from "@/components/dashboard/overview-cards";
+import { SpendCharts } from "@/components/dashboard/spend-charts";
 import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 
@@ -18,6 +19,11 @@ export default function DashboardPage() {
                 Overview
               </h2>
               <OverviewCards />
+            </section>
+
+            {/* Spend Analytics Charts */}
+            <section>
+              <SpendCharts />
             </section>
 
             {/* Quick Actions */}

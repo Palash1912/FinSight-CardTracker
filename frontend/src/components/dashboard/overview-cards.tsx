@@ -13,51 +13,40 @@ import {
   Award,
 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
-import { useCards } from "@/hooks/use-cards";
+import { useDashboardSummary } from "@/hooks/use-analytics";
 
 export function OverviewCards() {
-  const { data: cards, isLoading } = useCards();
-
-  const activeCards = cards?.filter((c) => c.status === "active") || [];
-
-  const totalOutstanding = activeCards.reduce(
-    (sum, c) => sum + (parseFloat(c.current_balance) || 0),
-    0
-  );
-
-  // Cards with upcoming dues in next 10 days
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const upcomingDueCards = activeCards.filter((c) => {
-    if ((parseFloat(c.current_balance) || 0) <= 0) return false;
-    const due = new Date(c.next_due_date);
-    due.setHours(0, 0, 0, 0);
-    const diffDays = Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    return diffDays >= 0 && diffDays <= 10;
-  });
+  const { data: summary, isLoading } = useDashboardSummary();
 
   const metrics = [
     {
       label: "Total Outstanding",
-      value: isLoading ? "..." : formatCurrency(totalOutstanding),
-      change: activeCards.length > 0 ? `Across ${activeCards.length} active cards` : "No active cards",
+      value: isLoading ? "..." : formatCurrency(summary?.total_outstanding || "0"),
+      change: summary && summary.active_cards_count > 0
+        ? `Across ${summary.active_cards_count} active card${summary.active_cards_count > 1 ? "s" : ""}`
+        : "No active cards",
       icon: IndianRupee,
       iconColor: "text-blue-600 bg-blue-100 dark:bg-blue-950/50 dark:text-blue-400",
     },
     {
       label: "Upcoming Dues",
-      value: isLoading ? "..." : `${upcomingDueCards.length} card${upcomingDueCards.length === 1 ? "" : "s"}`,
-      change: upcomingDueCards.length > 0 ? "Due within next 10 days" : "All dues settled",
+      value: isLoading
+        ? "..."
+        : `${summary?.upcoming_dues_count || 0} bill${(summary?.upcoming_dues_count || 0) === 1 ? "" : "s"}`,
+      change: (summary?.upcoming_dues_count || 0) > 0
+        ? `${formatCurrency(summary?.upcoming_dues_total || "0")} due soon`
+        : "All dues settled",
       icon: CalendarClock,
-      iconColor: upcomingDueCards.length > 0
+      iconColor: (summary?.upcoming_dues_count || 0) > 0
         ? "text-amber-600 bg-amber-100 dark:bg-amber-950/50 dark:text-amber-400"
         : "text-emerald-600 bg-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-400",
     },
     {
       label: "Monthly Spend",
-      value: "₹0.00",
-      change: "Import statements to track spend",
+      value: isLoading ? "..." : formatCurrency(summary?.current_month_spend || "0"),
+      change: summary?.spend_change_percentage != null
+        ? `${summary.spend_change_percentage > 0 ? "+" : ""}${summary.spend_change_percentage}% vs last month`
+        : "Current month debits",
       icon: TrendingDown,
       iconColor: "text-emerald-600 bg-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-400",
     },
