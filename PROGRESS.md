@@ -1,8 +1,8 @@
 # FinSight AI — Project Implementation Progress & Roadmap
 
 > **Last Updated**: November 17, 2026  
-> **Overall Status**: Phases 1, 2, 3, and 4 Completed ✅ | Phase 5 (Rewards Engine) Queued ⏳  
-> **Progress**: **~60% Complete**
+> **Overall Status**: Phases 1, 2, 3, 4, and 5 Completed ✅ | Phase 6 (Reward Reconciliation) Queued ⏳  
+> **Progress**: **~70% Complete**
 
 ---
 
@@ -15,7 +15,7 @@
 | **Phase 2** | Credit Card Management & CRUD APIs | **Completed** ✅ | 100% |
 | **Phase 3** | Statement Ingestion (PDF Parsers & Dedup Pipeline) | **Completed** ✅ | 100% |
 | **Phase 4** | Payments, Bill Tracking & Core Analytics | **Completed** ✅ | 100% |
-| **Phase 5** | Rewards Engine & Pre-Purchase Recommendation (Core Differentiator) | **Pending** ⏳ | 0% |
+| **Phase 5** | Rewards Engine & Pre-Purchase Recommendation (Core Differentiator) | **Completed** ✅ | 100% |
 | **Phase 6** | Post-Purchase Reward Reconciliation & Dashboard | **Pending** ⏳ | 0% |
 | **Phase 7** | Gmail OAuth Statement Discovery & Ingestion | **Pending** ⏳ | 0% |
 | **Phase 8** | LangGraph AI Financial Assistant with Safe Deterministic Tools | **Pending** ⏳ | 0% |
@@ -144,21 +144,38 @@
 
 ---
 
-### Phase 5: Rewards & Benefits Intelligence Engine (Core Differentiator — Core Module 5) ⏳
-- [ ] Database migration: `reward_programs`, `reward_rules`, `reward_caps`, `reward_periods`, `reward_ledger`, `reward_redemptions`
-- [ ] Rule configuration API (versioned, effective-dated rules with source document references)
-- [ ] Deterministic Reward Calculator (`reward_engine.py`):
-  - [ ] Base rates, category accelerators, merchant accelerators, online/offline channels
-  - [ ] Min/max transaction limits and exclusion lists
-- [ ] Cap Tracking Engine (`cap_tracker.py`):
-  - [ ] Calendar month, quarter, year, billing cycle reset rules
-  - [ ] Track earned, pending, confirmed, credited, reversed, remaining amounts
-  - [ ] Configurable pending cap consumption and refund reversal semantics
-- [ ] Pre-Purchase Recommendation Engine (`purchase_advisor.py`):
-  - [ ] Evaluate planned purchase across all user cards
-  - [ ] Compare net benefits, remaining cap, and explain decision logic
-  - [ ] Interactive UI purchase simulator & comparison table
-- [ ] Comprehensive unit tests with synthetic bank rule fixtures
+### Phase 5: Rewards & Benefits Intelligence Engine (Core Differentiator — Core Module 5) ✅ (100%)
+- [x] Database migration: `reward_programs`, `reward_rules`, `reward_caps`, and `reward_ledger` tables in `0004_rewards.py`
+- [x] SQLAlchemy models: `RewardProgram`, `RewardRule`, `RewardCap`, `RewardLedger` in `app/models/reward.py`
+- [x] Pydantic v2 schemas: `RewardProgramRead`, `RewardRuleRead`, `RewardCapRead`, `CardRecommendationRequest`, `CardRecommendationItem`, `CardRecommendationResponse`, `CapUtilizationItem`, `RewardSummaryOverview` in `app/schemas/reward.py`
+- [x] Deterministic Reward Calculator (`app/services/reward_engine.py`):
+  - [x] Base rates, category accelerators, merchant regex accelerators, online/offline channels
+  - [x] Min/max transaction limits and exclusion lists (Fuel, Rent, Wallet Reload, Government)
+- [x] Cap Tracking Engine (`app/services/cap_tracker.py`):
+  - [x] Calendar month, quarter, year, billing cycle reset rules and date arithmetic
+  - [x] Track consumed vs remaining benefits with ledger query aggregation
+- [x] Pre-Purchase Recommendation Engine (`app/services/purchase_advisor.py`):
+  - [x] Evaluate planned purchase across all user cards
+  - [x] Rank by net INR benefit and flag winner
+  - [x] Explain decision logic and cap exhaustion warnings
+- [x] Realistic bank reward fixtures seeding service (`app/services/seed_rewards.py`):
+  - [x] Amazon Pay ICICI (5% Amazon, 2% Bill Pay, 1% Base)
+  - [x] HDFC Millennia (5% Partner Merchants with ₹1,000/mo cap, 1% Base with ₹1,000/mo cap)
+  - [x] HSBC Cashback / Live+ (10% Dining with ₹1,000/cycle cap, 1.5% Base)
+  - [x] Axis Flipkart (5% Flipkart, 4% Preferred Partners, 1.5% Base)
+  - [x] Generic points fixture (2 pts per ₹100, ₹0.25/pt)
+- [x] REST APIs under `/api/v1/rewards`:
+  - [x] `POST /api/v1/rewards/recommend` (simulator)
+  - [x] `GET /api/v1/rewards/caps` (live cap utilization)
+  - [x] `GET /api/v1/rewards/summary` (overall balances)
+  - [x] `GET /api/v1/rewards/programs` (configured rules)
+  - [x] `POST /api/v1/rewards/seed` (seed/reload default bank rules)
+- [x] Unit test suite for Reward Engine, Cap Tracker, and Schemas (`tests/unit/test_rewards.py`)
+- [x] Frontend UI:
+  - [x] Interactive Pre-Purchase Card Advisor Simulator (`src/components/rewards/purchase-simulator.tsx`) with quick presets and winner card spotlight
+  - [x] Live Cap Monitoring list (`src/components/rewards/cap-utilization-card.tsx`) with visual progress bars and reset countdowns
+  - [x] Full Rewards Dashboard (`src/app/rewards/page.tsx`) with overview metrics, advisor, cap tracking, and rule inspection tabs
+  - [x] React Query hooks (`src/hooks/use-rewards.ts`) and TypeScript types (`src/lib/types.ts`)
 
 ---
 

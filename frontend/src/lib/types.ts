@@ -237,3 +237,108 @@ export interface DashboardSummary {
   upcoming_dues_count: number;
   upcoming_dues_total: Money;
 }
+
+/** Phase 5: Rewards types */
+
+export interface RewardCapRead {
+  id: string;
+  rule_id: string;
+  cap_name: string;
+  cap_period: string;
+  reset_basis: string;
+  cap_amount: Money;
+  cap_currency: string;
+  pending_consumes_cap: boolean;
+  refunds_reverse_cap: boolean;
+}
+
+export interface RewardRuleRead {
+  id: string;
+  program_id: string;
+  rule_name: string;
+  rule_type: string;
+  reward_rate: Money;
+  reward_rate_type: string;
+  min_transaction_amount: Money;
+  max_eligible_amount: Money | null;
+  category: string | null;
+  merchant_pattern: string | null;
+  channel: string | null;
+  exclusions: string[] | null;
+  effective_from: string;
+  effective_to: string | null;
+  version: number;
+  source_url: string | null;
+  verification_status: string;
+  confidence_notes: string | null;
+  caps: RewardCapRead[];
+}
+
+export interface RewardProgramRead {
+  id: string;
+  card_id: string;
+  program_name: string;
+  reward_type: string;
+  reward_currency: string;
+  point_value_inr: Money;
+  expiry_months: number | null;
+  rules: RewardRuleRead[];
+}
+
+export interface CardRecommendationRequest {
+  amount: Money;
+  merchant?: string;
+  category?: string;
+  channel?: "online" | "offline" | "any";
+  purchase_date?: string;
+}
+
+export interface CardRecommendationItem {
+  card_id: string;
+  card_name: string;
+  issuer: string;
+  network: string;
+  last_four_digits: string;
+  is_recommended: boolean;
+  rank: number;
+  effective_rate_percent: number;
+  estimated_reward: Money;
+  inr_value: Money;
+  reward_type: string;
+  rule_applied: string;
+  remaining_cap_before: Money | null;
+  remaining_cap_after: Money | null;
+  cap_period: string | null;
+  explanation: string;
+  verification_status: string;
+  confidence_notes: string | null;
+}
+
+export interface CardRecommendationResponse {
+  best_card: CardRecommendationItem | null;
+  cards: CardRecommendationItem[];
+  purchase_amount: Money;
+  disclaimer: string;
+}
+
+export interface CapUtilizationItem {
+  card_id: string;
+  card_name: string;
+  issuer: string;
+  cap_name: string;
+  cap_period: string;
+  reset_basis: string;
+  cap_amount: Money;
+  consumed_amount: Money;
+  remaining_amount: Money;
+  utilization_percentage: number;
+  next_reset_date: string;
+}
+
+export interface RewardSummaryOverview {
+  total_cashback_earned: Money;
+  total_points_balance: number;
+  total_inr_value: Money;
+  active_programs_count: number;
+}
+
