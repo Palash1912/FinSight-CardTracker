@@ -1,148 +1,135 @@
-# FinSight AI
+# FinSight AI 💳 ⚡
 
-**AI-powered personal credit card & rewards intelligence platform.**
+**Personal Credit Card Intelligence, Deterministic Rewards Optimizer & Statement Pipeline.**
 
-FinSight AI helps you manage multiple credit cards, ingest bank statements, track transactions and payments, understand card-specific cashback and reward rules, monitor reward caps, and determine which card provides the best benefit for a planned purchase.
+FinSight AI is a self-hostable, privacy-first personal finance platform designed to manage credit cards, automate PDF & Gmail statement ingestion, track payments, audit reward earnings, monitor spend caps, and recommend the best credit card for every purchase with zero LLM arithmetic.
 
-> **Disclaimer:** Reward estimates depend on configured and verified issuer terms and may differ from actual bank postings. All sample reward rules in this repository are synthetic examples for development purposes only.
+> **Disclaimer:** Reward calculations depend on configured and verified issuer terms. Calculations are executed exclusively by deterministic SQL and Python calculation engines.
 
-## Features (Planned)
+---
 
-- 💳 **Card Management** — Add, edit, and track multiple credit cards
-- 📄 **Statement Ingestion** — Upload PDFs, auto-extract transactions
-- 💰 **Transaction Tracking** — Categorize, search, and analyze spending
-- 📅 **Payment & Bill Tracking** — Due dates, reminders, payment status
-- 🎁 **Rewards Intelligence** — Configurable rules, cap tracking, pre-purchase recommendations
-- 📊 **Dashboard & Analytics** — Spend breakdown, trends, reward utilization
-- 📧 **Gmail Integration** — Auto-discover and ingest statement emails
-- 🤖 **AI Assistant** — Natural language queries over your financial data
-- 📚 **Document RAG** — Search official bank terms and policies
+## 🌟 Key Features
 
-## Tech Stack
+- 💳 **Credit Card Portfolio**: Track limits, balances, dynamic utilization bars, statement generation dates, and countdown to due dates.
+- 📄 **Statement Ingestion Pipeline**: Ingest PDF statements from ICICI, HDFC, HSBC, Axis, and generic issuers with SHA-256 deduplication and staged review screens.
+- 💰 **Transaction Engine**: Automatic merchant normalization, category heuristics, and inline editing.
+- 📅 **Payments & Bill Tracking**: Multi-payment statement settlements, overdue warning banners, and historical audit logs.
+- 🎁 **Rewards Intelligence & Pre-Purchase Advisor**:
+  - Deterministic evaluation of base rates, merchant accelerators (e.g. 5% on Amazon), and category accelerators (e.g. 10% on Dining).
+  - Multi-card recommendation simulator ranking cards by net INR benefit with cap remaining disclosures.
+  - Active cap trackers across calendar months, quarters, and statement cycles.
+- 🔍 **Post-Purchase Reward Reconciliation**: Audits statement transactions for reward leaks, unrewarded spend (fuel/rent exclusions), and forfeited benefits due to exhausted caps.
+- 📧 **Gmail Statement Ingestion**: Automated discovery of credit card statement emails using read-only OAuth (`gmail.readonly`) with Fernet AES token encryption.
+- 🤖 **AI Financial Assistant**: Conversational financial advisor backed by strict read-only deterministic tools. Never performs mental math.
+- 📚 **Document Knowledge & Policy RAG**: Search official bank cardmember agreements with grounded page-level citations (`[HDFC Millennia Circular, Page 2]`).
+- 🛡️ **Data Sovereignty & Privacy**: GDPR-compliant 1-click JSON export, CSV transaction export, database backup/restore scripts, and complete data purge.
 
-| Layer | Technologies |
-|-------|-------------|
-| Frontend | Next.js 15, React 19, TypeScript, Tailwind CSS, shadcn/ui, Recharts, TanStack Query |
-| Backend | Python 3.12, FastAPI, Pydantic v2, SQLAlchemy 2 (async), Alembic |
-| Database | PostgreSQL 16 |
-| AI | LangGraph, OpenAI API (optional, behind provider abstraction) |
+---
 
-## Quick Start
+## 🏗️ Architecture
 
-### Prerequisites
-
-- [Docker](https://docs.docker.com/get-docker/) and Docker Compose
-- Git
-
-### 1. Clone and configure
-
-```bash
-git clone <repo-url> finsight-ai
-cd finsight-ai
-cp .env.example .env
-# Edit .env with your preferred passwords and settings
+```
+┌────────────────────────────────────────────────────────┐
+│                   Next.js 15 (React 19)                │
+│       Tailwind CSS • shadcn/ui • Recharts • TanStack   │
+└───────────────────────────▲────────────────────────────┘
+                            │ REST APIs
+┌───────────────────────────▼────────────────────────────┐
+│                    FastAPI Backend                     │
+│  ┌───────────────────────┐  ┌───────────────────────┐  │
+│  │   Reward Engine       │  │   Statement Parser    │  │
+│  │ (Deterministic Money) │  │  (PDF / SHA-256 Dedup)│  │
+│  └───────────────────────┘  └───────────────────────┘  │
+│  ┌───────────────────────┐  ┌───────────────────────┐  │
+│  │  AI Assistant Tools   │  │   Policy RAG & Chunks │  │
+│  │ (Zero LLM Arithmetic) │  │  (Page Citations)     │  │
+│  └───────────────────────┘  └───────────────────────┘  │
+└───────────────────────────▲────────────────────────────┘
+                            │ SQLAlchemy 2 (Async)
+┌───────────────────────────▼────────────────────────────┐
+│                  PostgreSQL 16 Engine                  │
+│       20+ Normalized Entities • Numeric(18, 4) Money    │
+└────────────────────────────────────────────────────────┘
 ```
 
-### 2. Start all services
+---
+
+## 🚀 Quick Start (Docker Compose)
+
+### 1. Clone & Configure Environment
 
 ```bash
-docker compose up --build
+git clone https://github.com/Palash1912/FinSight-CardTracker.git finsight-ai
+cd finsight-ai
+cp .env.example .env
+```
+
+### 2. Start Services
+
+```bash
+docker compose up --build -d
 ```
 
 This starts:
-- **PostgreSQL** on port `5432`
-- **Backend API** on [http://localhost:8000](http://localhost:8000)
-- **Frontend** on [http://localhost:3000](http://localhost:3000)
+- **PostgreSQL 16**: Port `5432`
+- **FastAPI API**: [http://localhost:8000](http://localhost:8000) (Swagger Docs at `/docs`)
+- **Next.js Frontend**: [http://localhost:3000](http://localhost:3000)
 
-### 3. Run database migrations
+### 3. Run Migrations & Seed Default Bank Rules
 
 ```bash
+# Run database migrations to head
 docker compose exec backend alembic upgrade head
 ```
 
-### 4. Verify
+Open [http://localhost:3000](http://localhost:3000) in your browser!
 
-- Frontend dashboard: [http://localhost:3000](http://localhost:3000)
-- API health check: [http://localhost:8000/api/v1/health](http://localhost:8000/api/v1/health)
-- API docs (Swagger): [http://localhost:8000/docs](http://localhost:8000/docs)
+---
 
-## Development
+## 🧪 Testing & Quality Assurance
 
-### Backend (without Docker)
+### Run Unit Tests (Backend)
 
 ```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
-
-# Start with a local PostgreSQL
-export DATABASE_URL="postgresql+asyncpg://finsight:finsight_dev@localhost:5432/finsight"
-uvicorn app.main:app --reload
+docker compose exec backend pytest tests/unit -v
 ```
 
-### Frontend (without Docker)
+The test suite covers:
+- Billing cycle & due date calculations (`test_billing.py`)
+- Statement PDF parsers & normalizers (`test_parsers.py`)
+- Payment settlement & analytics schemas (`test_payments_and_analytics.py`)
+- RewardEngine, accelerator matching, and cap limits (`test_rewards.py`)
+- Gmail query builders and token encryption (`test_email_service.py`)
+- AI Assistant deterministic tool definitions (`test_assistant.py`)
+- Document sliding chunking and relevance scoring (`test_documents.py`)
+- CSV export and security headers (`test_data_export.py`)
+
+---
+
+## 💾 Database Backup & Restore
+
+FinSight AI provides one-command CLI scripts for data protection:
 
 ```bash
-cd frontend
-npm install
-npm run dev
+# Create a compressed database backup in ./backups/
+bash scripts/backup.sh
+
+# Restore from a backup archive
+bash scripts/restore.sh backups/finsight_backup_YYYYMMDD_HHMMSS.sql.gz
 ```
 
-### Running Tests
+---
 
-```bash
-# Backend unit tests (no database needed)
-cd backend
-pytest tests/ -v
+## 🔒 Security Principles
 
-# With database
-docker compose exec backend pytest tests/ -v
-```
+1. **Numeric(18, 4) Precision**: Financial values use Decimal numbers — floating-point arithmetic is prohibited.
+2. **Zero PAN Storage**: Credit cards store only issuer, network, and last 4 digits (`**** 1234`). Full card numbers, PINs, and CVVs are never requested or stored.
+3. **Encrypted Tokens**: Gmail OAuth tokens are encrypted at rest using Fernet symmetric encryption with PBKDF2 key derivation.
+4. **Defensive Headers**: Built-in middleware enforces `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, and strict referrer policies.
+5. **Data Sovereignty**: 1-click JSON and CSV export under Settings, with complete data purge functionality.
 
-### Linting & Formatting
+---
 
-```bash
-cd backend
-ruff check .
-ruff format .
-mypy app/
-```
+## 📜 License
 
-## Project Structure
-
-```
-finsight-ai/
-├── docker-compose.yml          # All services
-├── .env.example                # Configuration template
-├── backend/
-│   ├── app/
-│   │   ├── main.py             # FastAPI application
-│   │   ├── config.py           # Settings
-│   │   ├── database.py         # SQLAlchemy async engine
-│   │   ├── models/             # ORM models
-│   │   ├── schemas/            # Pydantic schemas
-│   │   ├── api/                # Route handlers
-│   │   └── services/           # Business logic
-│   ├── alembic/                # Database migrations
-│   └── tests/                  # Test suite
-├── frontend/
-│   └── src/
-│       ├── app/                # Next.js pages
-│       ├── components/         # React components
-│       ├── lib/                # Utilities & API client
-│       └── hooks/              # Custom hooks
-└── docs/                       # Documentation
-```
-
-## Security & Privacy
-
-- No full card numbers, CVVs, PINs, or bank credentials are stored
-- PDFs and financial data remain local to your instance
-- AI features are optional — disable by setting `AI_ENABLED=false`
-- OAuth tokens are encrypted at rest
-- Never commit `.env` or real financial data
-
-## License
-
-MIT
+Licensed under the MIT License. Contributions and PRs welcome!
