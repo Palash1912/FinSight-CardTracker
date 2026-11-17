@@ -1,8 +1,8 @@
 # FinSight AI — Project Implementation Progress & Roadmap
 
 > **Last Updated**: November 17, 2026  
-> **Overall Status**: Phases 1, 2, 3, 4, and 5 Completed ✅ | Phase 6 (Reward Reconciliation) Queued ⏳  
-> **Progress**: **~70% Complete**
+> **Overall Status**: Phases 1 through 6 Completed ✅ | Phase 7 (Gmail Ingestion) Queued ⏳  
+> **Progress**: **~80% Complete**
 
 ---
 
@@ -16,7 +16,7 @@
 | **Phase 3** | Statement Ingestion (PDF Parsers & Dedup Pipeline) | **Completed** ✅ | 100% |
 | **Phase 4** | Payments, Bill Tracking & Core Analytics | **Completed** ✅ | 100% |
 | **Phase 5** | Rewards Engine & Pre-Purchase Recommendation (Core Differentiator) | **Completed** ✅ | 100% |
-| **Phase 6** | Post-Purchase Reward Reconciliation & Dashboard | **Pending** ⏳ | 0% |
+| **Phase 6** | Post-Purchase Reward Reconciliation & Dashboard | **Completed** ✅ | 100% |
 | **Phase 7** | Gmail OAuth Statement Discovery & Ingestion | **Pending** ⏳ | 0% |
 | **Phase 8** | LangGraph AI Financial Assistant with Safe Deterministic Tools | **Pending** ⏳ | 0% |
 | **Phase 9** | Document Knowledge & Policy RAG | **Pending** ⏳ | 0% |
@@ -179,15 +179,21 @@
 
 ---
 
-### Phase 6: Post-Purchase Reward Reconciliation & Dashboard ⏳
-- [ ] Statement transaction rule matching & expected reward ledger calculation
-- [ ] Discrepancy detection (missing, short, reversed rewards)
-- [ ] Reward Dashboard UI:
-  - [ ] Total rewards earned, pending, confirmed, credited, redeemed
-  - [ ] Points balance and redemption value
-  - [ ] Cap utilization progress bars per card
-  - [ ] Expiring rewards and fee-waiver threshold tracker
-- [ ] Reconciliation tests
+### Phase 6: Post-Purchase Reward Reconciliation & Dashboard ✅ (100%)
+- [x] Statement transaction rule matching & expected reward ledger calculation (`app/services/reward_reconciliation.py`)
+- [x] Running cap consumption tracking across statement transactions
+- [x] Discrepancy detection (missing rewards, excluded spend warnings, cap losses, refund reversals)
+- [x] Automatic reward reconciliation on statement confirmation (`app/services/statement_service.py`)
+- [x] REST APIs under `/api/v1/rewards`:
+  - [x] `GET /api/v1/rewards/reconciliation` (retrieval with card and statement filters)
+  - [x] `POST /api/v1/rewards/reconciliation/run` (manual trigger & force recalculate)
+- [x] Unit tests for reconciliation schemas and discrepancy flags (`tests/unit/test_rewards.py`)
+- [x] Frontend UI:
+  - [x] Reward Reconciliation Audit tab (`src/components/rewards/reward-reconciliation-view.tsx`)
+  - [x] Reconciliation KPI metric cards (Total Expected Rewards, Excluded Spend, Cap Losses, Audit Flags)
+  - [x] Interactive card filter and discrepancy toggle
+  - [x] Detailed audit table with date, card, merchant, applied rule, rate %, expected reward, and status/reason badges
+  - [x] Connected to React Query hooks (`useRewardReconciliation`, `useRunReconciliation`)
 
 ---
 

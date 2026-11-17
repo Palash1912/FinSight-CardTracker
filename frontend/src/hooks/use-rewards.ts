@@ -5,12 +5,15 @@ import type {
   CardRecommendationRequest,
   CardRecommendationResponse,
   RewardProgramRead,
+  RewardReconcileRequest,
+  RewardReconciliationSummary,
   RewardSummaryOverview,
 } from "@/lib/types";
 
 export const REWARDS_SUMMARY_KEY = ["rewards", "summary"];
 export const REWARDS_CAPS_KEY = ["rewards", "caps"];
 export const REWARDS_PROGRAMS_KEY = ["rewards", "programs"];
+export const REWARDS_RECONCILIATION_KEY = ["rewards", "reconciliation"];
 
 /**
  * Fetch high-level reward balances and stats.
@@ -64,6 +67,42 @@ export function useSeedRewards() {
       queryClient.invalidateQueries({ queryKey: REWARDS_PROGRAMS_KEY });
       queryClient.invalidateQueries({ queryKey: REWARDS_CAPS_KEY });
       queryClient.invalidateQueries({ queryKey: REWARDS_SUMMARY_KEY });
+      queryClient.invalidateQueries({ queryKey: REWARDS_RECONCILIATION_KEY });
     },
   });
 }
+
+/**
+ * Fetch post-purchase reward reconciliation summary & audit items.
+ */
+export function useRewardReconciliation(cardId?: string, statementId?: string) {
+  const queryParams = new URLSearchParams();
+  if (cardId) queryParams.set("card_id", cardId);
+  if (statementId) queryParams.set("statement_id", statementId);
+
+  const qs = queryParams.toString();
+  const path = `/rewards/reconciliation${qs ? `?${qs}` : ""}`;
+
+  return useQuery<RewardReconciliationSummary>({
+    queryKey: [...REWARDS_RECONCILIATION_KEY, { cardId, statementId }],
+    queryFn: () => api.get<RewardReconciliationSummary>(path),
+  });
+}
+
+/**
+ * Trigger reward reconciliation across transactions.
+ */
+export function useRunReconciliation() {
+  const queryClient = useQueryClient();
+
+  return useMutation<RewardReconciliationSummary, Error, RewardReconcileRequest>({
+    mutationFn: (body: RewardReconcileRequest) =>
+      api.post<RewardReconciliationSummary>("/rewards/reconciliation/run", body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: REWARDS_RECONCILIATION_KEY });
+      queryClient.invalidateQueries({ queryKey: REWARDS_SUMMARY_KEY });
+      queryClient.invalidateQueries({ queryKey: REWARDS_CAPS_KEY });
+    },
+  });
+}
+

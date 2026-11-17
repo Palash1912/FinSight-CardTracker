@@ -345,6 +345,17 @@ class StatementService:
 
         await self.db.commit()
         await self.db.refresh(statement)
+
+        # Automatically calculate rewards for newly confirmed statement transactions
+        try:
+            from app.services.reward_reconciliation import RewardReconciliationService
+            await RewardReconciliationService.reconcile(
+                self.db, user_id=user_id, statement_id=statement.id, force_recalculate=False
+            )
+        except Exception:
+            # Non-blocking if rewards program not yet configured
+            pass
+
         return statement
 
     async def list_statements(

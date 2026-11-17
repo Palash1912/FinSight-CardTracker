@@ -194,5 +194,10 @@ class RewardLedger(Base, TimestampMixin):
     period_key: Mapped[str] = mapped_column(String(50), index=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
+    rule: Mapped[RewardRule] = relationship("RewardRule")
+    cap: Mapped[RewardCap | None] = relationship("RewardCap")
+    transaction: Mapped[Any | None] = relationship("Transaction", lazy="joined")
+    card: Mapped[Any] = relationship("CreditCard", lazy="joined")
+
     def __repr__(self) -> str:
         return f"<RewardLedger {self.id} reward={self.reward_amount} ({self.status})>"

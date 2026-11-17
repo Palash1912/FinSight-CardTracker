@@ -5,7 +5,7 @@ from __future__ import annotations
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
@@ -16,9 +16,12 @@ from app.schemas.reward import (
     CardRecommendationRequest,
     CardRecommendationResponse,
     RewardProgramRead,
+    RewardReconcileRequest,
+    RewardReconciliationSummary,
     RewardSummaryOverview,
 )
 from app.services.purchase_advisor import PurchaseAdvisor
+from app.services.reward_reconciliation import RewardReconciliationService
 from app.services.seed_rewards import seed_user_reward_programs
 
 router = APIRouter(prefix="/rewards")
@@ -80,3 +83,33 @@ async def seed_rewards(
         "message": f"Successfully configured reward programs for {count} cards.",
         "seeded_count": count,
     }
+
+
+@router.get("/reconciliation", response_model=RewardReconciliationSummary)
+async def get_reconciliation_report(
+    user: CurrentUser,
+    db: DbSession,
+    card_id: Annotated[uuid.UUID | None, Query()] = None,
+    statement_id: Annotated[uuid.UUID | None, Query()] = None,
+) -> RewardReconciliationSummary:
+    """Retrieve post-purchase reward calculations and discrepancy report."""
+    return await RewardReconciliationService.get_reconciliation_report(
+        db, user.id, card_id=card_id, statement_id=statement_id
+    )
+
+
+@router.post("/reconciliation/run", response_model=RewardReconciliationSummary)
+async def run_reconciliation(
+    user: CurrentUser,
+    db: DbSession,
+    body: RewardReconcileRequest,
+) -> RewardReconciliationSummary:
+    """Trigger or recalculate reward reconciliation across transactions."""
+    return await RewardReconciliationService.reconcile(
+        db,
+        user.id,
+        card_id=body.card_id,
+        statement_id=body.statement_id,
+        force_recalculate=body.force_recalculate,
+    )
+

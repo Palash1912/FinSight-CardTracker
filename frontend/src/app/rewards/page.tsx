@@ -13,6 +13,7 @@ import {
 } from "@/hooks/use-rewards";
 import { PurchaseSimulator } from "@/components/rewards/purchase-simulator";
 import { CapUtilizationList } from "@/components/rewards/cap-utilization-card";
+import { RewardReconciliationView } from "@/components/rewards/reward-reconciliation-view";
 import {
   Gift,
   Coins,
@@ -24,10 +25,11 @@ import {
   Percent,
   Sliders,
   ChevronRight,
+  FileCheck2,
 } from "lucide-react";
 
 export default function RewardsPage() {
-  const [activeTab, setActiveTab] = useState<"advisor" | "caps" | "programs">("advisor");
+  const [activeTab, setActiveTab] = useState<"advisor" | "reconciliation" | "caps" | "programs">("advisor");
   const [seedSuccessMsg, setSeedSuccessMsg] = useState<string | null>(null);
 
   const { data: summary, isLoading: summaryLoading } = useRewardSummary();
@@ -161,6 +163,17 @@ export default function RewardsPage() {
           Pre-Purchase Card Advisor
         </button>
         <button
+          onClick={() => setActiveTab("reconciliation")}
+          className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 ${
+            activeTab === "reconciliation"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <FileCheck2 className="w-4 h-4" />
+          Reconciliation Audit
+        </button>
+        <button
           onClick={() => setActiveTab("caps")}
           className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === "caps"
@@ -187,7 +200,10 @@ export default function RewardsPage() {
       {/* Tab 1: Pre-Purchase Simulator */}
       {activeTab === "advisor" && <PurchaseSimulator />}
 
-      {/* Tab 2: Cap Trackers */}
+      {/* Tab 2: Reward Reconciliation Audit */}
+      {activeTab === "reconciliation" && <RewardReconciliationView />}
+
+      {/* Tab 3: Cap Trackers */}
       {activeTab === "caps" && (
         <div className="space-y-4">
           <div>

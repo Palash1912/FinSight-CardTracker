@@ -342,3 +342,41 @@ export interface RewardSummaryOverview {
   active_programs_count: number;
 }
 
+export interface RewardReconcileRequest {
+  card_id?: string | null;
+  statement_id?: string | null;
+  force_recalculate?: boolean;
+}
+
+export interface RewardReconciliationItem {
+  transaction_id: string;
+  card_id: string;
+  card_name: string;
+  transaction_date: string;
+  description: string;
+  merchant_name: string | null;
+  category: string;
+  amount: Money;
+  txn_type: "debit" | "credit";
+  rule_name: string | null;
+  rate_percent: number;
+  reward_amount: Money;
+  inr_value: Money;
+  status: string;
+  is_discrepancy: boolean;
+  discrepancy_reason: string | null;
+  period_key: string | null;
+  notes: string | null;
+}
+
+export interface RewardReconciliationSummary {
+  total_transactions: number;
+  total_spend: Money;
+  total_rewards_inr: Money;
+  total_excluded_spend: Money;
+  total_capped_lost_inr: Money;
+  discrepancy_count: number;
+  items: RewardReconciliationItem[];
+}
+
+

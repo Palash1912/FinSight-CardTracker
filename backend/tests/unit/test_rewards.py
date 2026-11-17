@@ -196,3 +196,51 @@ def test_reward_engine_cap_exhaustion() -> None:
     assert res.remaining_cap_before == Decimal("200.00")
     assert res.remaining_cap_after == Decimal("0.00")
     assert "Capped: ₹200.00 remaining" in res.explanation
+
+
+def test_reconciliation_schemas() -> None:
+    from app.schemas.reward import (
+        RewardReconcileRequest,
+        RewardReconciliationItem,
+        RewardReconciliationSummary,
+    )
+
+    req = RewardReconcileRequest(force_recalculate=True)
+    assert req.force_recalculate is True
+    assert req.card_id is None
+
+    item = RewardReconciliationItem(
+        transaction_id=uuid.uuid4(),
+        card_id=uuid.uuid4(),
+        card_name="Millennia",
+        transaction_date=date(2026, 10, 20),
+        description="SWIGGY BANGALORE",
+        merchant_name="Swiggy",
+        category="Food & Dining",
+        amount=Decimal("1200.00"),
+        txn_type="debit",
+        rule_name="5% on Swiggy",
+        rate_percent=5.0,
+        reward_amount=Decimal("60.00"),
+        inr_value=Decimal("60.00"),
+        status="confirmed",
+        is_discrepancy=False,
+        discrepancy_reason=None,
+        period_key="2026-10",
+        notes="Accelerated reward applied.",
+    )
+    assert item.rate_percent == 5.0
+    assert item.reward_amount == Decimal("60.00")
+
+    summary = RewardReconciliationSummary(
+        total_transactions=1,
+        total_spend=Decimal("1200.00"),
+        total_rewards_inr=Decimal("60.00"),
+        total_excluded_spend=Decimal("0.00"),
+        total_capped_lost_inr=Decimal("0.00"),
+        discrepancy_count=0,
+        items=[item],
+    )
+    assert summary.total_transactions == 1
+    assert summary.total_rewards_inr == Decimal("60.00")
+

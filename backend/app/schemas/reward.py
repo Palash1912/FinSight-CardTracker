@@ -134,3 +134,47 @@ class RewardSummaryOverview(BaseModel):
     total_points_balance: int
     total_inr_value: Money
     active_programs_count: int
+
+
+class RewardReconcileRequest(BaseModel):
+    """Request to trigger transaction reward calculation and reconciliation."""
+
+    card_id: uuid.UUID | None = None
+    statement_id: uuid.UUID | None = None
+    force_recalculate: bool = False
+
+
+class RewardReconciliationItem(BaseModel):
+    """Single transaction reward reconciliation status."""
+
+    transaction_id: uuid.UUID
+    card_id: uuid.UUID
+    card_name: str
+    transaction_date: date
+    description: str
+    merchant_name: str | None
+    category: str
+    amount: Money
+    txn_type: str
+    rule_name: str | None
+    rate_percent: float
+    reward_amount: Money
+    inr_value: Money
+    status: str
+    is_discrepancy: bool
+    discrepancy_reason: str | None
+    period_key: str | None
+    notes: str | None
+
+
+class RewardReconciliationSummary(BaseModel):
+    """Aggregated reconciliation report for a card, statement, or overall."""
+
+    total_transactions: int
+    total_spend: Money
+    total_rewards_inr: Money
+    total_excluded_spend: Money
+    total_capped_lost_inr: Money
+    discrepancy_count: int
+    items: list[RewardReconciliationItem]
+
