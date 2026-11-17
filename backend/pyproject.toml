@@ -19,6 +19,7 @@ dependencies = [
     "httpx",
     "pypdf>=5.0.0",
     "cryptography>=42.0.0",
+    "psycopg[binary]>=3.1.0",
 ]
 
 [project.optional-dependencies]
