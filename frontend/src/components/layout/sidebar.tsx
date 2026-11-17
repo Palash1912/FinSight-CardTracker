@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -46,8 +48,7 @@ const bottomNavItems: NavItem[] = [
 export function Sidebar() {
   const [expanded, setExpanded] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
-  // Default active route
-  const activeHref = "/";
+  const pathname = usePathname();
 
   return (
     <>
@@ -93,9 +94,9 @@ export function Sidebar() {
         {/* Navigation */}
         <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-4">
           {navItems.map((item) => {
-            const isActive = activeHref === item.href;
+            const isActive = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
             return (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
@@ -123,7 +124,7 @@ export function Sidebar() {
                     {item.badge}
                   </Badge>
                 )}
-              </a>
+              </Link>
             );
           })}
         </nav>
@@ -131,7 +132,7 @@ export function Sidebar() {
         {/* Bottom navigation */}
         <div className="border-t px-2 py-4">
           {bottomNavItems.map((item) => (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               className="group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
@@ -139,7 +140,7 @@ export function Sidebar() {
             >
               <item.icon className="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-accent-foreground" />
               {expanded && <span className="truncate">{item.label}</span>}
-            </a>
+            </Link>
           ))}
         </div>
 

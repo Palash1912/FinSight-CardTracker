@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -10,49 +12,64 @@ import {
   TrendingDown,
   Award,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-interface MetricCard {
-  label: string;
-  value: string;
-  change?: string;
-  changeType?: "positive" | "negative" | "neutral";
-  icon: React.ElementType;
-  iconColor: string;
-}
-
-const metrics: MetricCard[] = [
-  {
-    label: "Total Outstanding",
-    value: "₹0.00",
-    change: undefined,
-    icon: IndianRupee,
-    iconColor: "text-blue-600 bg-blue-100",
-  },
-  {
-    label: "Upcoming Dues",
-    value: "0 cards",
-    change: undefined,
-    icon: CalendarClock,
-    iconColor: "text-amber-600 bg-amber-100",
-  },
-  {
-    label: "Monthly Spend",
-    value: "₹0.00",
-    change: undefined,
-    icon: TrendingDown,
-    iconColor: "text-emerald-600 bg-emerald-100",
-  },
-  {
-    label: "Rewards Earned",
-    value: "₹0.00",
-    change: undefined,
-    icon: Award,
-    iconColor: "text-purple-600 bg-purple-100",
-  },
-];
+import { cn, formatCurrency } from "@/lib/utils";
+import { useCards } from "@/hooks/use-cards";
 
 export function OverviewCards() {
+  const { data: cards, isLoading } = useCards();
+
+  const activeCards = cards?.filter((c) => c.status === "active") || [];
+
+  const totalOutstanding = activeCards.reduce(
+    (sum, c) => sum + (parseFloat(c.current_balance) || 0),
+    0
+  );
+
+  // Cards with upcoming dues in next 10 days
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const upcomingDueCards = activeCards.filter((c) => {
+    if ((parseFloat(c.current_balance) || 0) <= 0) return false;
+    const due = new Date(c.next_due_date);
+    due.setHours(0, 0, 0, 0);
+    const diffDays = Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    return diffDays >= 0 && diffDays <= 10;
+  });
+
+  const metrics = [
+    {
+      label: "Total Outstanding",
+      value: isLoading ? "..." : formatCurrency(totalOutstanding),
+      change: activeCards.length > 0 ? `Across ${activeCards.length} active cards` : "No active cards",
+      icon: IndianRupee,
+      iconColor: "text-blue-600 bg-blue-100 dark:bg-blue-950/50 dark:text-blue-400",
+    },
+    {
+      label: "Upcoming Dues",
+      value: isLoading ? "..." : `${upcomingDueCards.length} card${upcomingDueCards.length === 1 ? "" : "s"}`,
+      change: upcomingDueCards.length > 0 ? "Due within next 10 days" : "All dues settled",
+      icon: CalendarClock,
+      iconColor: upcomingDueCards.length > 0
+        ? "text-amber-600 bg-amber-100 dark:bg-amber-950/50 dark:text-amber-400"
+        : "text-emerald-600 bg-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-400",
+    },
+    {
+      label: "Monthly Spend",
+      value: "₹0.00",
+      change: "Import statements to track spend",
+      icon: TrendingDown,
+      iconColor: "text-emerald-600 bg-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-400",
+    },
+    {
+      label: "Rewards Earned",
+      value: "₹0.00",
+      change: "Phase 5 Rewards engine",
+      icon: Award,
+      iconColor: "text-purple-600 bg-purple-100 dark:bg-purple-950/50 dark:text-purple-400",
+    },
+  ];
+
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {metrics.map((metric) => (
@@ -75,16 +92,7 @@ export function OverviewCards() {
               {metric.value}
             </div>
             {metric.change && (
-              <p
-                className={cn(
-                  "mt-1 text-xs",
-                  metric.changeType === "positive"
-                    ? "text-success"
-                    : metric.changeType === "negative"
-                      ? "text-destructive"
-                      : "text-muted-foreground"
-                )}
-              >
+              <p className="mt-1 text-xs text-muted-foreground">
                 {metric.change}
               </p>
             )}

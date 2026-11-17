@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CreditCard, FileUp, Gift } from "lucide-react";
@@ -16,7 +17,7 @@ const actions: QuickAction[] = [
     description: "Register a new credit card to start tracking spend and rewards.",
     icon: CreditCard,
     iconColor: "text-blue-600 bg-blue-100",
-    href: "/cards/new",
+    href: "/cards",
   },
   {
     title: "Upload Statement",
@@ -55,7 +56,7 @@ export function QuickActions() {
               </p>
             </div>
             <Button variant="outline" size="sm" className="mt-auto" asChild>
-              <a href={action.href}>Get Started</a>
+              <Link href={action.href}>Get Started</Link>
             </Button>
           </CardContent>
         </Card>

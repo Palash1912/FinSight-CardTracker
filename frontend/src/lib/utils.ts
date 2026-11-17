@@ -11,16 +11,17 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Format a number as currency.
+ * Format a number or decimal string as currency.
  * Defaults to Indian Rupee (INR) formatting.
  */
-export function formatCurrency(amount: number, currency: string = "INR"): string {
+export function formatCurrency(amount: number | string, currency: string = "INR"): string {
+  const num = typeof amount === "string" ? parseFloat(amount) || 0 : amount;
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency,
-    minimumFractionDigits: 2,
+    minimumFractionDigits: 0,
     maximumFractionDigits: 2,
-  }).format(amount);
+  }).format(num);
 }
 
 /**

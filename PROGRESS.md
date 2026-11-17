@@ -1,8 +1,8 @@
 # FinSight AI — Project Implementation Progress & Roadmap
 
 > **Last Updated**: November 17, 2026  
-> **Overall Status**: Phase 1 Completed ✅ | Phase 2 Backend Completed, Frontend in Progress 🟡  
-> **Progress**: **~25% Complete**
+> **Overall Status**: Phase 1 & 2 Completed ✅ | Phase 3 (Statement Ingestion) Queued ⏳  
+> **Progress**: **~30% Complete**
 
 ---
 
@@ -12,7 +12,7 @@
 | :--- | :--- | :--- | :--- |
 | **Phase 0** | Inspection, Architecture & Schema Planning | **Completed** ✅ | 100% |
 | **Phase 1** | Project Scaffold, Docker Stack, Migrations & Base Shell | **Completed** ✅ | 100% |
-| **Phase 2** | Credit Card Management & CRUD APIs | **In Progress** 🟡 | 60% (Backend 100%, Frontend 0%) |
+| **Phase 2** | Credit Card Management & CRUD APIs | **Completed** ✅ | 100% |
 | **Phase 3** | Statement Ingestion (PDF Parsers & Dedup Pipeline) | **Pending** ⏳ | 0% |
 | **Phase 4** | Payments, Bill Tracking & Core Analytics | **Pending** ⏳ | 0% |
 | **Phase 5** | Rewards Engine & Pre-Purchase Recommendation (Core Differentiator) | **Pending** ⏳ | 0% |
@@ -61,7 +61,7 @@
 
 ---
 
-### Phase 2: Credit Card Management (Core Module 1) 🟡 (60%)
+### Phase 2: Credit Card Management (Core Module 1) ✅ (100%)
 - [x] Database migration: `credit_cards` table in `0001_initial_users_and_cards.py`
 - [x] SQLAlchemy models: `CreditCard` model in `app/models/card.py`
 - [x] Pydantic v2 schemas: `CardCreate`, `CardUpdate`, `CardResponse`, `CardSummary` in `app/schemas/card.py`
@@ -73,11 +73,13 @@
   - [x] Unit tests for billing calculations (`tests/unit/test_billing.py`)
   - [x] Unit tests for card schemas (`tests/unit/test_card_schemas.py`)
   - [x] Integration tests for Card REST API (`tests/integration/test_cards_api.py`)
-- [ ] Frontend:
-  - [ ] Card list page (`src/app/cards/page.tsx`) with status badges, issuers, network badges
-  - [ ] Add Card dialog/form with Zod validation
-  - [ ] Card detail view / card overview component
-  - [ ] Edit / Archive card actions
+- [x] Frontend:
+  - [x] Card list page (`src/app/cards/page.tsx`) with status badges, aggregate metrics, active/archived filters
+  - [x] Visual card component (`src/components/cards/card-visual.tsx`) with EMV chip, issuer branding, masked PAN
+  - [x] Card summary card (`src/components/cards/card-summary-card.tsx`) with dynamic utilization progress bar, due date proximity badges, statement date
+  - [x] Add/Edit Card dialog (`src/components/cards/card-form-dialog.tsx`) with form validation & bank suggestions
+  - [x] React Query hooks (`src/hooks/use-cards.ts`) for list, get, create, update, and archive operations
+  - [x] Live dashboard overview metrics integration (`src/components/dashboard/overview-cards.tsx`)
 
 ---
 
