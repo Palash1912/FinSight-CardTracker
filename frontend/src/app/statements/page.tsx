@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { UploadStatementDialog } from "@/components/statements/upload-dialog";
+import { GmailSyncCard } from "@/components/statements/gmail-sync-card";
 import { useStatements, useDeleteStatement } from "@/hooks/use-statements";
 import { useCards } from "@/hooks/use-cards";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -100,6 +101,9 @@ export default function StatementsPage() {
                 Upload Statement
               </Button>
             </div>
+
+            {/* Automated Gmail Statement Ingestion */}
+            <GmailSyncCard />
 
             {/* Content states */}
             {isLoading ? (

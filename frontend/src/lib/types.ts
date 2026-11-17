@@ -379,4 +379,51 @@ export interface RewardReconciliationSummary {
   items: RewardReconciliationItem[];
 }
 
+/** Phase 7: Email & Gmail statement ingestion types */
+
+export interface EmailConnectionRead {
+  id: string;
+  email_address: string;
+  provider: string;
+  sync_status: "idle" | "syncing" | "error" | "disconnected";
+  last_synced_at: string | null;
+  error_message: string | null;
+  created_at: string;
+}
+
+export interface EmailImportRead {
+  id: string;
+  connection_id: string;
+  statement_id: string | null;
+  card_id: string | null;
+  sender: string;
+  subject: string;
+  received_at: string;
+  attachment_name: string;
+  status: "discovered" | "downloaded" | "ingested" | "skipped_duplicate" | "failed";
+  error_message: string | null;
+  created_at: string;
+}
+
+export interface GmailAuthUrlResponse {
+  auth_url: string;
+  state: string;
+}
+
+export interface GmailSyncRequest {
+  connection_id?: string | null;
+  days_back?: number;
+}
+
+export interface GmailSyncResponse {
+  connection_id: string;
+  email_address: string;
+  messages_found: number;
+  attachments_downloaded: number;
+  statements_created: number;
+  duplicates_skipped: number;
+  errors: string[];
+}
+
+
 

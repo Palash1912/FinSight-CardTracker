@@ -50,6 +50,13 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     openai_model: str = "gpt-4o"
 
+    # Google OAuth (Phase 7: Gmail statement ingestion)
+    google_client_id: str = ""
+    google_client_secret: str = ""
+    google_redirect_uri: str = "http://localhost:3000/settings/gmail/callback"
+    token_encryption_key: str = ""
+
+
 
 @lru_cache
 def get_settings() -> Settings:

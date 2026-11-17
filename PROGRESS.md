@@ -1,8 +1,8 @@
 # FinSight AI — Project Implementation Progress & Roadmap
 
 > **Last Updated**: November 17, 2026  
-> **Overall Status**: Phases 1 through 6 Completed ✅ | Phase 7 (Gmail Ingestion) Queued ⏳  
-> **Progress**: **~80% Complete**
+> **Overall Status**: Phases 1 through 7 Completed ✅ | Phase 8 (AI Assistant) Queued ⏳  
+> **Progress**: **~85% Complete**
 
 ---
 
@@ -17,7 +17,7 @@
 | **Phase 4** | Payments, Bill Tracking & Core Analytics | **Completed** ✅ | 100% |
 | **Phase 5** | Rewards Engine & Pre-Purchase Recommendation (Core Differentiator) | **Completed** ✅ | 100% |
 | **Phase 6** | Post-Purchase Reward Reconciliation & Dashboard | **Completed** ✅ | 100% |
-| **Phase 7** | Gmail OAuth Statement Discovery & Ingestion | **Pending** ⏳ | 0% |
+| **Phase 7** | Gmail OAuth Statement Discovery & Ingestion | **Completed** ✅ | 100% |
 | **Phase 8** | LangGraph AI Financial Assistant with Safe Deterministic Tools | **Pending** ⏳ | 0% |
 | **Phase 9** | Document Knowledge & Policy RAG | **Pending** ⏳ | 0% |
 | **Phase 10** | Security Hardening, Backup/Restore, CI & Release Readiness | **Pending** ⏳ | 0% |
@@ -197,13 +197,27 @@
 
 ---
 
-### Phase 7: Gmail Statement Ingestion (Core Module 7) ⏳
-- [ ] Database migration: `email_connections`, `email_imports`
-- [ ] Gmail OAuth integration (read-only scope) with encrypted token storage
-- [ ] Sender and subject filter rules configuration
-- [ ] Background polling/discovery worker
-- [ ] Attachment downloader, deduplication check & handoff to Phase 3 statement pipeline
-- [ ] Disconnect and token revocation UI
+### Phase 7: Gmail Statement Ingestion (Core Module 7) ✅ (100%)
+- [x] Database migration: `email_connections` and `email_imports` tables in `0005_email_imports.py`
+- [x] SQLAlchemy models: `EmailConnection` and `EmailImport` in `app/models/email.py`
+- [x] Token encryption service (`app/services/token_encryption.py`) with Fernet symmetric cipher and PBKDF2 key derivation
+- [x] Gmail OAuth integration with read-only (`gmail.readonly`) scope and configuration in `app/config.py`
+- [x] Bank statement discovery filter query generator targeting Indian issuers (HDFC, ICICI, HSBC, Axis, SBI) in `app/services/gmail_service.py`
+- [x] Attachment downloader, SHA-256 deduplication check, and seamless handoff to Phase 3 statement pipeline
+- [x] Simulated discovery engine for sandbox / local test demonstrations without requiring live Google Cloud Console credentials
+- [x] REST APIs under `/api/v1/email`:
+  - [x] `GET /api/v1/email/connections` (list active connections)
+  - [x] `GET /api/v1/email/auth-url` (OAuth consent URL)
+  - [x] `POST /api/v1/email/callback` (exchange authorization code)
+  - [x] `POST /api/v1/email/sync` (trigger statement discovery & download)
+  - [x] `DELETE /api/v1/email/connections/{id}` (disconnect & revoke tokens)
+  - [x] `GET /api/v1/email/imports` (audit log of discovered emails and statuses)
+- [x] Unit test suite for Gmail queries, token encryption, and schemas (`tests/unit/test_email_service.py`)
+- [x] Frontend UI:
+  - [x] `GmailSyncCard` embedded on Statements page (`src/components/statements/gmail-sync-card.tsx`)
+  - [x] Real-time sync progress indicator and discovery outcome banner
+  - [x] Discovery audit history drawer listing subject, sender, attachment, and status badges (`ingested`, `skipped_duplicate`, `failed`)
+  - [x] React Query hooks (`useEmailConnections`, `useGmailAuthUrl`, `useSyncGmail`, `useEmailImports`) in `src/hooks/use-email.ts`
 
 ---
 

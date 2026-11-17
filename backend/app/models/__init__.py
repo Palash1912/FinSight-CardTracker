@@ -2,6 +2,7 @@
 
 from app.models.base import Base
 from app.models.card import CreditCard
+from app.models.email import EmailConnection, EmailImport
 from app.models.payment import Payment
 from app.models.reward import RewardCap, RewardLedger, RewardProgram, RewardRule
 from app.models.statement import Statement
@@ -11,6 +12,8 @@ from app.models.user import User
 __all__ = [
     "Base",
     "CreditCard",
+    "EmailConnection",
+    "EmailImport",
     "Payment",
     "RewardProgram",
     "RewardRule",
